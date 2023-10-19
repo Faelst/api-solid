@@ -1,41 +1,34 @@
-import { it, describe, expect, test } from 'vitest'
+import { it, describe, expect, test, beforeEach } from 'vitest'
 import { RegisterUseCase } from './register.usecase'
-import { PrismaUsersRepository } from '../repository/prisma/users.repository'
 import { compare } from 'bcryptjs'
-import { UsersRepository } from '../interfaces/users-repository.interface'
 import { InMemoryUsersRepository } from '../repository/in-memory/users.repository'
 import { UserAlreadyExistsError } from './errors/user-allready-exists.error'
 
 describe('RegisterUseCase', () => {
+  let usersRepository: InMemoryUsersRepository
+  let sut: RegisterUseCase
+
+  const userTest = {
+    name: 'john due',
+    email: 'email@test.com',
+    passwordString: 'asd@12356',
+  }
+
+  beforeEach(() => {
+    usersRepository = new InMemoryUsersRepository()
+    sut = new RegisterUseCase(usersRepository)
+  })
+
   it('should create user', async () => {
-    const userTest = {
-      name: 'john due',
-      email: 'email@test.com',
-      passwordString: 'asd@12356',
-    }
-
-    const usersRepository = new InMemoryUsersRepository()
-
-    const registerUseCase = new RegisterUseCase(usersRepository)
-
-    const { user } = await registerUseCase.execute(userTest)
+    console.log(sut)
+    const { user } = await sut.execute(userTest)
 
     expect(user).toBeDefined()
     expect(user.id).toEqual(expect.any(String))
   })
 
   it('should hash user password upon register', async () => {
-    const userTest = {
-      name: 'john due',
-      email: 'email@test.com',
-      passwordString: 'asd@12356',
-    }
-
-    const usersRepository = new InMemoryUsersRepository()
-
-    const registerUseCase = new RegisterUseCase(usersRepository)
-
-    const { user } = await registerUseCase.execute(userTest)
+    const { user } = await sut.execute(userTest)
 
     const isPasswordCorrectlyHash = await compare(
       userTest.passwordString,
@@ -52,14 +45,10 @@ describe('RegisterUseCase', () => {
       passwordString: 'asd@12356',
     }
 
-    const usersRepository = new InMemoryUsersRepository()
+    await sut.execute(userTest)
 
-    const registerUseCase1 = new RegisterUseCase(usersRepository)
-
-    await registerUseCase1.execute(userTest)
-
-    await expect(() =>
-      registerUseCase1.execute(userTest),
-    ).rejects.toBeInstanceOf(UserAlreadyExistsError)
+    await expect(() => sut.execute(userTest)).rejects.toBeInstanceOf(
+      UserAlreadyExistsError,
+    )
   })
 })
