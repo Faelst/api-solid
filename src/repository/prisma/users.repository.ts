@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
-import { UsersRepository } from '../../interfaces/users-repository.interface'
+import { UsersRepository } from '../../interfaces/users-repository'
 
 export class PrismaUsersRepository implements UsersRepository {
   create({ email, name, password_hash }: Prisma.UserCreateInput) {
@@ -17,6 +17,14 @@ export class PrismaUsersRepository implements UsersRepository {
     return prisma.user.findUnique({
       where: {
         email,
+      },
+    })
+  }
+
+  findById(id: string) {
+    return prisma.user.findUnique({
+      where: {
+        id,
       },
     })
   }

@@ -20,7 +20,6 @@ describe('RegisterUseCase', () => {
   })
 
   it('should create user', async () => {
-    console.log(sut)
     const { user } = await sut.execute(userTest)
 
     expect(user).toBeDefined()
