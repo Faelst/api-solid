@@ -9,4 +9,6 @@ export interface CheckInsRepository {
     limit?: number,
   ): Promise<CheckIn[] | null>
   countByUserId(userId: string): Promise<number>
+  findById(checkId: string): Promise<CheckIn | null>
+  save(checkIn: CheckIn): Promise<CheckIn>
 }
