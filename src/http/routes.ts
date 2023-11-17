@@ -6,7 +6,7 @@ import { veriyJwt } from './middlewares/verify-jwt'
 
 export const appRoutes = async (app: FastifyInstance) => {
   app.post('/users', registerUser)
-  app.post('/sessions', authenticate)
+  app.post('/session', authenticate)
 
   app.get('/me', { onRequest: [veriyJwt] }, profile)
 }
