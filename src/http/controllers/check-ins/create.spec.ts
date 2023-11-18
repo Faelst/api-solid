@@ -4,7 +4,7 @@ import request from 'supertest'
 import { app } from '@/app'
 import { createAndAuthenticationUser } from '../../../utils/test/create-and-auth-user'
 
-describe('Gyms (e2e)', () => {
+describe('CheckIns Create (e2e)', () => {
   beforeAll(async () => {
     await app.ready()
   })
@@ -13,7 +13,7 @@ describe('Gyms (e2e)', () => {
     await app.close()
   })
 
-  it('should be able create new gym', async () => {
+  it('should be able create Check-In', async () => {
     const gym = {
       title: 'any_gym_title',
       description: 'any_gym_description',
@@ -24,11 +24,27 @@ describe('Gyms (e2e)', () => {
 
     const { token } = await createAndAuthenticationUser(app)
 
-    const response = await request(app.server)
+    const gymResponse = await request(app.server)
       .post('/gyms')
       .set('Authorization', `Bearer ${token}`)
       .send(gym)
 
-    expect(response.statusCode).toEqual(201)
+    const gymId = gymResponse.body.gym.id
+
+    const checkInResponse = await request(app.server)
+      .post(`/gyms/${gymId}/check-in`)
+      .query({
+        latitude: -27.999,
+        longitude: -49.999,
+      })
+      .set('Authorization', `Bearer ${token}`)
+      .send(gym)
+
+    expect(checkInResponse.statusCode).toEqual(201)
+    expect(checkInResponse.body.checkIn).toEqual(
+      expect.objectContaining({
+        gym_id: gymId,
+      }),
+    )
   })
 })
