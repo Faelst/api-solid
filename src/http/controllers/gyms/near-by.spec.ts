@@ -22,7 +22,7 @@ describe('Near By Gym (e2e)', () => {
       longitude: -38.519214,
     }
 
-    const { token } = await createAndAuthenticationUser(app)
+    const { token } = await createAndAuthenticationUser(app, true)
 
     await request(app.server)
       .post('/gyms')

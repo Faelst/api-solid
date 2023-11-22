@@ -22,7 +22,7 @@ describe('Search Gyms (e2e)', () => {
       longitude: -49.999,
     }
 
-    const { token } = await createAndAuthenticationUser(app)
+    const { token } = await createAndAuthenticationUser(app, true)
 
     await request(app.server)
       .post('/gyms')
